@@ -1,17 +1,19 @@
 {
   "expo": {
-    "name": "lahjio-app",
-    "slug": "lahjio-app",
+    "name": "Lahjio",
+    "slug": "lahjio",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "app.lahjio"
     },
     "android": {
+      "package": "app.lahjio",
       "adaptiveIcon": {
-        "backgroundColor": "#E6F4FE",
+        "backgroundColor": "#047857",
         "foregroundImage": "./assets/android-icon-foreground.png",
         "backgroundImage": "./assets/android-icon-background.png",
         "monochromeImage": "./assets/android-icon-monochrome.png"
@@ -19,6 +21,21 @@
     },
     "web": {
       "favicon": "./assets/favicon.png"
+    },
+    "plugins": [
+      "expo-router",
+      [
+        "expo-audio",
+        {
+          "microphonePermission": false
+        }
+      ],
+      "expo-font",
+      "expo-asset"
+    ],
+    "scheme": "lahjio",
+    "experiments": {
+      "typedRoutes": true
     }
   }
 }
