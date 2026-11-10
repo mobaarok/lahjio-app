@@ -22,9 +22,8 @@ name, feedback, logout), privacy and terms.
 
 - 2026-11-09: the owner opened the app on their phone with Expo Go (it loads).
   Their feedback on each screen hasn't come in yet.
-- 2026-11-10: **no APK built yet.** Every tool is installed (see "Building an APK");
-  the last try failed only because a large download dropped on the mobile hotspot.
-  Run `npm run apk` again on a steadier connection.
+- 2026-11-10: first APK built with `npm run apk`: `apk/lahjio-1.0.0.apk` (49 MB,
+  Android 7.0+, signed with the debug key). Not yet installed and tested on the phone.
 
 Not done yet:
 - **Google login.** Needs a development build with `@react-native-google-signin/google-signin`,
@@ -89,13 +88,20 @@ in Expo Go means the phone can't reach the server.
   `npx expo prebuild --clean`).
 - Writes `android/local.properties` with forward slashes. Backslashes made Gradle fail with
   "The filename, directory name, or volume label syntax is incorrect".
+- Also sets `cmake.dir` to the newest CMake in the SDK (4.1.2). With Gradle's default
+  CMake 3.22.1, its ninja 1.10 failed in `react-native-reanimated` (pulled in by Expo
+  Router) with `ninja: error: mkdir(...): No such file or directory`: the C++ object
+  folders contain the project path twice and pass Windows' 260-character limit. Ninja
+  1.12 handles long paths. If a C++ build fails after switching CMake, delete the
+  `node_modules/*/android/.cxx` folders and build again.
+- Runs `gradlew.bat` by its full path; some shells don't look in the current folder.
 - Builds only arm64-v8a and armeabi-v7a (real phones), then copies the APK to
   `apk/lahjio-<version>.apk` (ignored by git). Gradle's own output is
   `android/app/build/outputs/apk/release/app-release.apk`.
 - The APK is signed with the **debug key**: fine to install and share with testers,
   not for the Play Store (that needs an upload key, made when publishing).
-- The first build downloads Gradle and about 2 GB of libraries; on the hotspot this took
-  over 20 minutes and once failed with "Got socket exception" while downloading
+- A full build takes about 20 to 25 minutes on this laptop. The first one also downloads
+  Gradle and about 2 GB of libraries; on the hotspot that once failed with "Got socket exception" while downloading
   `react-android-0.88.1-release.aar`. Downloaded files stay cached in `%USERPROFILE%\.gradle`,
   so just run it again. Gradle installed the NDK 27.1 and SDK platform 37 it needed by itself.
 - Cloud option: `npx eas-cli build -p android --profile preview` (needs an Expo account

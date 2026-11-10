@@ -46,3 +46,4 @@ yarn-error.*
 # Built APKs (npm run apk)
 /apk
 *.apk
+android-build.log
