@@ -271,7 +271,10 @@ const styles = StyleSheet.create({
   pageTitle: { fontSize: 26, fontWeight: "700", color: colors.text },
   pageSubtitle: { marginTop: spacing.xs, fontSize: 15, color: colors.textMuted },
   progressTrack: {
-    flex: 1,
+    // Grows to fill a row; in a column it already takes the full width.
+    // (flex: 1 made it 0 high when it sat in a column, e.g. Home's goal card.)
+    flexGrow: 1,
+    flexShrink: 1,
     height: 10,
     borderRadius: radius.full,
     backgroundColor: colors.divider,

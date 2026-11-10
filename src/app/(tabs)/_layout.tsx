@@ -3,6 +3,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { Tabs } from "expo-router";
 import type { ComponentProps } from "react";
 import type { ColorValue } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { colors } from "@/constants/theme";
 import { useLocale } from "@/context/LocaleContext";
 
@@ -15,8 +16,14 @@ function tabIcon(name: IconName) {
   return TabIcon;
 }
 
+// Taller than the default 49 px bar, so Bangla labels (with vowel signs below
+// the line) fit under the icon instead of being cut off
+const TAB_BAR_HEIGHT = 62;
+
 export default function TabsLayout() {
   const { t } = useLocale();
+  // Space for the phone's gesture bar or buttons at the bottom of the screen
+  const { bottom } = useSafeAreaInsets();
 
   return (
     <Tabs
@@ -24,8 +31,13 @@ export default function TabsLayout() {
         headerShown: false,
         tabBarActiveTintColor: colors.primaryDark,
         tabBarInactiveTintColor: colors.textMuted,
-        tabBarStyle: { backgroundColor: colors.surface, borderTopColor: colors.border },
-        tabBarLabelStyle: { fontSize: 11, fontWeight: "500" },
+        tabBarStyle: {
+          backgroundColor: colors.surface,
+          borderTopColor: colors.border,
+          height: TAB_BAR_HEIGHT + bottom,
+          paddingBottom: bottom,
+        },
+        tabBarLabelStyle: { fontSize: 11, fontWeight: "500", lineHeight: 16 },
       }}
     >
       <Tabs.Screen name="index" options={{ title: t("nav.home"), tabBarIcon: tabIcon("home-outline") }} />
