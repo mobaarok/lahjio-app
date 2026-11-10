@@ -12,7 +12,7 @@ are the same in the app and on the website.
 - Read `AGENTS.md` too: Expo's own rules (check the versioned Expo docs, use
   `npx expo install`, never edit `android/` by hand).
 
-## Status (2026-11-09)
+## Status (2026-11-10)
 
 First version built and tested in the browser against the local emulators:
 welcome, email login/signup/password reset, home (streak, XP, goal, next lesson,
@@ -20,7 +20,11 @@ word of the day), courses, course, lesson (learn, quiz, results), word library,
 flashcard practice (4 modes), quiz (guests can play), progress, account (language,
 name, feedback, logout), privacy and terms.
 
-**Not tested on a real phone yet.** The owner tests with Expo Go first.
+- 2026-11-09: the owner opened the app on their phone with Expo Go (it loads).
+  Their feedback on each screen hasn't come in yet.
+- 2026-11-10: **no APK built yet.** Every tool is installed (see "Building an APK");
+  the last try failed only because a large download dropped on the mobile hotspot.
+  Run `npm run apk` again on a steadier connection.
 
 Not done yet:
 - **Google login.** Needs a development build with `@react-native-google-signin/google-signin`,
@@ -46,13 +50,56 @@ Not done yet:
 ## Commands
 
 - `npm start`: dev server; scan the QR code with **Expo Go** on the phone
-- `npm run android`: same, opening the Android emulator
+- `npm run start:tunnel`: the same through an internet tunnel (`@expo/ngrok`), for
+  when the phone can't reach the computer directly. Slower and uses mobile data.
+- `npm run android`: dev server that opens the Android emulator
+- `npm run android:build`: builds and installs a native debug app on a plugged-in phone
+  or emulator (needed later for Google login)
+- `npm run apk`: release APK for testers (see "Building an APK")
 - `npm run typecheck`, `npm run lint`, `npm run check:i18n`, `npm run doctor`.
   Run all four before saying work is done.
 - `npx expo export --platform android`: bundles the app without a phone (a quick
   build check; delete `dist/` after)
-- APK for testers: `npx eas-cli build -p android --profile preview` (cloud, free tier
-  has limits) or `npx expo run:android --variant release` (local, uses Android Studio's SDK)
+
+### Testing on the owner's phone (Expo Go)
+
+The owner's laptop gets internet from their phone's hotspot, so phone and laptop are
+on the same network, with the phone as the hotspot. Expo Go only connected after the owner:
+
+1. Set the hotspot Wi-Fi to **Private** in Windows network settings
+2. Allowed `C:\Program Files\nodejs\node.exe` through Windows Firewall on Private networks
+3. Started the server with the laptop's Wi-Fi address in the QR code, because Expo
+   otherwise picks the laptop's own hotspot adapter (192.168.137.1):
+   `$env:REACT_NATIVE_PACKAGER_HOSTNAME="10.142.82.91"; npm start` (PowerShell).
+   The address can change; check it with `Get-NetIPAddress -InterfaceAlias Wi-Fi`.
+
+A quick check: with the server running, `http://<address>:8081` should load in the
+phone's browser. The error "java.io.IOException: Failed to download remote update"
+in Expo Go means the phone can't reach the server.
+
+### Building an APK
+
+`npm run apk` (`scripts/build-apk.mjs`) builds on this laptop for free:
+
+- Uses Android Studio's Java (`C:\Program Files\Android\Android Studio\jbr`, Java 21)
+  and the SDK in `%LOCALAPPDATA%\Android\Sdk`. JAVA_HOME and ANDROID_HOME are not set
+  in Windows, so the script sets them for the build.
+- Creates `android/` with `expo prebuild` if it's missing (`android/` is generated and
+  not in git; after changing `app.json` or adding a native package, delete it, or run
+  `npx expo prebuild --clean`).
+- Writes `android/local.properties` with forward slashes. Backslashes made Gradle fail with
+  "The filename, directory name, or volume label syntax is incorrect".
+- Builds only arm64-v8a and armeabi-v7a (real phones), then copies the APK to
+  `apk/lahjio-<version>.apk` (ignored by git). Gradle's own output is
+  `android/app/build/outputs/apk/release/app-release.apk`.
+- The APK is signed with the **debug key**: fine to install and share with testers,
+  not for the Play Store (that needs an upload key, made when publishing).
+- The first build downloads Gradle and about 2 GB of libraries; on the hotspot this took
+  over 20 minutes and once failed with "Got socket exception" while downloading
+  `react-android-0.88.1-release.aar`. Downloaded files stay cached in `%USERPROFILE%\.gradle`,
+  so just run it again. Gradle installed the NDK 27.1 and SDK platform 37 it needed by itself.
+- Cloud option: `npx eas-cli build -p android --profile preview` (needs an Expo account
+  and the `.env` values added as EAS environment variables; free tier has limits).
 
 ### Testing logged-in screens safely
 
@@ -72,6 +119,13 @@ Use the website project's local emulators, never the real database:
 from the website's `.env`. `.env.example` lists the names. These values are public
 identifiers built into the app; Firestore rules protect the data. EAS cloud builds
 don't see `.env`, so add the same values as EAS environment variables before using them.
+
+## Laptop setup (checked 2026-11-10)
+
+Everything needed to build is installed: Node 24, Git, Android Studio with Java 21,
+SDK platforms 33/36/37, build-tools 35 to 37, NDK 27.1 to 30, CMake 3.22 and 4.1,
+platform-tools (adb), licenses accepted, Windows long paths on, about 35 GB free.
+`java` and `adb` are not on PATH, which is fine because the scripts don't need them.
 
 ## How the code is organised
 
@@ -105,6 +159,14 @@ They share Firestore, so they must agree on the data:
   from a server later).
 - `useVisitTracker` waits for progress to load before writing `users/{uid}`; writing
   while it is read made Firestore return a profile without XP or streak.
+
+## Expo Router notes
+
+- Logged-out learners must land on `/welcome`: `Stack.Protected` needs `redirectTo`.
+  Without it Expo Router sent them to a group with no index ("page not found") or to `/quiz`.
+- Auth screens live at the app root, not in an `(auth)` group, for the same reason.
+- `useAnimatedValue` doesn't exist in react-native-web; `Flashcard` uses
+  `useState(() => new Animated.Value(...))` so the browser test still works.
 
 ## Conventions
 

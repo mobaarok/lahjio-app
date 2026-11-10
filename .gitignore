@@ -42,3 +42,7 @@ yarn-error.*
 
 # Firebase config for this machine (copy .env.example to .env)
 .env
+
+# Built APKs (npm run apk)
+/apk
+*.apk
