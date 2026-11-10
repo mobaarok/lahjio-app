@@ -166,6 +166,23 @@ They share Firestore, so they must agree on the data:
 - `useVisitTracker` waits for progress to load before writing `users/{uid}`; writing
   while it is read made Firestore return a profile without XP or streak.
 
+## Screenshots
+
+`docs/screenshots/` holds the README screenshots (2026-11-10, Bangla, 390x844 at 2x). They
+were taken with headless Chrome (`puppeteer-core` pointed at the installed Chrome,
+`C:\Program Files (x86)\Google\Chrome\Application\chrome.exe`) driving the web build
+against the local emulators. Five real content packs from `../lahjio-beta/content-packs/`
+were loaded into the emulator, and the seeded test learner was given some XP, a streak and
+two finished lessons. Pages keep a live Firestore connection, so wait a fixed few seconds
+after loading instead of waiting for the network to go idle.
+
+## Layout notes
+
+- `ProgressBar` uses `flexGrow: 1`, not `flex: 1`: in a column, `flex: 1` made the bar
+  0 px high (Home's goal card and the Progress topics showed no bar).
+- The tab bar is 62 px plus the bottom safe area. The default 49 px cut off the lower
+  part of the Bangla labels.
+
 ## Expo Router notes
 
 - Logged-out learners must land on `/welcome`: `Stack.Protected` needs `redirectTo`.
