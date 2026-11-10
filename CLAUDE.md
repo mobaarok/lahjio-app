@@ -187,6 +187,12 @@ They share Firestore, so they must agree on the data:
 ## Working with the owner
 
 - They build step by step and test each step on their phone before moving on.
+- Branches: new work goes on `main`. `version1` is the last known-good version (made
+  2026-11-10 at commit 5d96900, the first version the owner tested on their phone).
+  Move it forward only when the owner asks.
+- Start the dev server with `npx.cmd` / `npm.cmd` in PowerShell: the plain `npx`/`npm`
+  scripts are blocked by the laptop's execution policy. Tunnel: `npm.cmd run start:tunnel`
+  (`--tunnel ngrok`; plain `--tunnel` asks for an Expo login in SDK 58).
 - Ask before pushing, publishing builds, or writing to the real Firestore database.
 - Never sign in to the real Firebase project with the owner's credentials; test with
   the emulators. The owner does Firebase Console, Google Play and GitHub settings steps.
