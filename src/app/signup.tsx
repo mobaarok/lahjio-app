@@ -3,6 +3,7 @@ import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
 import { useState } from "react";
 import { StyleSheet, Text } from "react-native";
 import { AuthForm } from "@/components/AuthForm";
+import { GoogleButton } from "@/components/GoogleButton";
 import { Alert, Button, Field } from "@/components/ui";
 import { colors } from "@/constants/theme";
 import { useAuth } from "@/context/AuthContext";
@@ -44,6 +45,7 @@ export default function SignupScreen() {
   return (
     <AuthForm title={t("signup.title")} subtitle={t("signup.subtitle")}>
       {error ? <Alert>{error}</Alert> : null}
+      <GoogleButton onError={setError} />
 
       <Field label={t("account.name")} value={name} onChangeText={setName} autoComplete="name" textContentType="name" />
       <Field

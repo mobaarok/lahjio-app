@@ -317,7 +317,7 @@ export default {
   "notFound.text": "लिंक गलत हो सकता है, या पेज हटा दिया गया है।",
 
   // Android app only
-  "auth.googleSoon": "ऐप में Google से लॉगिन जल्द आ रहा है। अभी ईमेल से लॉगिन करें।",
+  "auth.googlePlayServices": "Google से लॉगिन के लिए Google Play services चाहिए। उन्हें अपडेट करें, या ईमेल से लॉगिन करें।",
   "common.retry": "फिर से कोशिश करें",
   "account.website": "वेबसाइट खोलें",
   "account.version": "ऐप संस्करण {version}",

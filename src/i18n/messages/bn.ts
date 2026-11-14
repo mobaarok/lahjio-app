@@ -316,7 +316,7 @@ export default {
   "notFound.text": "লিংকটি ভুল হতে পারে, বা পেজটি সরিয়ে ফেলা হয়েছে।",
 
   // Android app only
-  "auth.googleSoon": "অ্যাপে Google দিয়ে লগইন শিগগিরই আসছে। এখন ইমেইল দিয়ে লগইন করো।",
+  "auth.googlePlayServices": "Google দিয়ে লগইনের জন্য Google Play services লাগবে। সেটা আপডেট করো, অথবা ইমেইল দিয়ে লগইন করো।",
   "common.retry": "আবার চেষ্টা করো",
   "account.website": "ওয়েবসাইট খোলো",
   "account.version": "অ্যাপ সংস্করণ {version}",

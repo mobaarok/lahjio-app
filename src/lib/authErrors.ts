@@ -14,6 +14,8 @@ const keys: Record<string, MessageKey> = {
   "auth/too-many-requests": "auth.tooMany",
   "auth/network-request-failed": "auth.network",
   "auth/requires-recent-login": "auth.recentLogin",
+  "auth/popup-blocked": "auth.popupBlocked",
+  "auth/google-play-services": "auth.googlePlayServices",
 };
 
 export function authErrorKey(error: unknown): MessageKey {

@@ -8,12 +8,12 @@
     "userInterfaceStyle": "light",
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "app.lahjio"
+      "bundleIdentifier": "com.lahjio.app"
     },
     "android": {
-      "package": "app.lahjio",
+      "package": "com.lahjio.app",
       "adaptiveIcon": {
-        "backgroundColor": "#047857",
+        "backgroundColor": "#006C35",
         "foregroundImage": "./assets/android-icon-foreground.png",
         "backgroundImage": "./assets/android-icon-background.png",
         "monochromeImage": "./assets/android-icon-monochrome.png"
@@ -31,7 +31,16 @@
         }
       ],
       "expo-font",
-      "expo-asset"
+      "expo-asset",
+      "@react-native-google-signin/google-signin",
+      [
+        "expo-splash-screen",
+        {
+          "image": "./assets/splash-icon.png",
+          "imageWidth": 160,
+          "backgroundColor": "#ffffff"
+        }
+      ]
     ],
     "scheme": "lahjio",
     "experiments": {

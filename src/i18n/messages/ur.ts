@@ -317,7 +317,7 @@ export default {
   "notFound.text": "لنک غلط ہو سکتا ہے، یا صفحہ ہٹا دیا گیا ہے۔",
 
   // Android app only
-  "auth.googleSoon": "ایپ میں Google سے لاگ اِن جلد آ رہا ہے۔ ابھی ای میل سے لاگ اِن کریں۔",
+  "auth.googlePlayServices": "Google سے لاگ اِن کے لیے Google Play services چاہیے۔ انہیں اپڈیٹ کریں، یا ای میل سے لاگ اِن کریں۔",
   "common.retry": "دوبارہ کوشش کریں",
   "account.website": "ویب سائٹ کھولیں",
   "account.version": "ایپ ورژن {version}",

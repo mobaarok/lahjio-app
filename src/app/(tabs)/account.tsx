@@ -15,6 +15,7 @@ import type { MessageKey } from "@/i18n/messages";
 import { sendFeedback } from "@/lib/account";
 import { authErrorKey } from "@/lib/authErrors";
 import { auth } from "@/lib/firebase";
+import { signOutOfGoogle } from "@/lib/googleSignIn";
 
 type IconName = ComponentProps<typeof Ionicons>["name"];
 
@@ -60,6 +61,12 @@ export default function AccountScreen() {
       },
       "account.nameSaved"
     );
+  }
+
+  // Also forgets the Google account, so the next login asks which one to use
+  async function logout() {
+    await signOutOfGoogle();
+    await signOut(auth);
   }
 
   function submitFeedback() {
@@ -144,7 +151,7 @@ export default function AccountScreen() {
         size="lg"
         variant="secondary"
         icon={<Ionicons name="log-out-outline" size={20} color={colors.text} />}
-        onPress={() => signOut(auth)}
+        onPress={logout}
       />
 
       <View>

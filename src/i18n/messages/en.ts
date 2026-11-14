@@ -317,7 +317,7 @@ export default {
   "notFound.text": "The link may be wrong, or the page was removed.",
 
   // Android app only
-  "auth.googleSoon": "Google sign-in is coming soon in the app. Please use email for now.",
+  "auth.googlePlayServices": "Google sign-in needs Google Play services. Update them, or log in with email.",
   "common.retry": "Try again",
   "account.website": "Open the website",
   "account.version": "App version {version}",

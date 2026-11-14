@@ -23,18 +23,34 @@ name, feedback, logout), privacy and terms.
 - 2026-11-09: the owner opened the app on their phone with Expo Go (it loads).
   Their feedback on each screen hasn't come in yet.
 - 2026-11-10: first APK built with `npm run apk`: `apk/lahjio-1.0.0.apk` (49 MB,
-  Android 7.0+, signed with the debug key). Not yet installed and tested on the phone.
+  Android 7.0+, signed with the debug key).
+- 2026-11-14: package name changed from `app.lahjio` to `com.lahjio.app` (Android app
+  "Lahjio Android" in Firebase). The new build installs as a separate app; uninstall
+  the old APK first. App icon, splash and the welcome logo now use the Lahjio logo
+  (`assets/logo.svg`; PNGs rendered from it with headless Chrome).
+- 2026-11-14: Google login works on the owner's phone (APK). It needs an APK or a
+  development build; the button is hidden in Expo Go. See "Google login" below.
 
 Not done yet:
-- **Google login.** Needs a development build with `@react-native-google-signin/google-signin`,
-  an Android app in Firebase Console with the SHA-1 fingerprint. Email login works.
-- App icon and splash are Expo's defaults. Needs Lahjio artwork.
 - Urdu shows Urdu text but the layout stays left to right (`I18nManager.forceRTL`
   needs an app restart; decide later).
 - No offline progress queue: content works offline after the first load, but
   answers made offline are only kept by Firestore's in-memory cache.
 - Play Store: needs the $25 Google Play developer account (owner), app signing
   and a store listing.
+
+## Google login
+
+- `src/lib/googleSignIn.ts`: `@react-native-google-signin/google-signin` (free "Original"
+  API) gives an ID token, then Firebase `signInWithCredential`. The library is imported
+  only when used, because importing it in Expo Go crashes (no native code there).
+  `googleSignIn.web.ts` uses `signInWithPopup` like the website.
+- Needs `EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID` in `.env` (the Web client ID from Firebase
+  Console > Authentication > Google). Add it to EAS too for cloud builds.
+- Firebase knows the debug key's SHA-1 (`5E:8F:16:...:F6:25`, the shared React Native
+  debug key). For the Play Store, add the upload key and Play app-signing SHA-1s.
+- Error code 10 (DEVELOPER_ERROR) means a SHA-1 or package name mismatch.
+- `expo prebuild` rewrites the `android` script in `package.json`; put it back.
 
 ## Stack
 
@@ -205,7 +221,7 @@ after loading instead of waiting for the network to go idle.
 
 - They build step by step and test each step on their phone before moving on.
 - Branches: new work goes on `main`. `version1` is the last known-good version (made
-  2026-11-10, moved to match `main` at commit 2070572 the same day).
+  2026-11-10; last moved to match `main` on 2026-11-14 after Google login was tested).
   Move it forward only when the owner asks.
 - Start the dev server with `npx.cmd` / `npm.cmd` in PowerShell: the plain `npx`/`npm`
   scripts are blocked by the laptop's execution policy. Tunnel: `npm.cmd run start:tunnel`

@@ -3,6 +3,7 @@ import { signInWithEmailAndPassword } from "firebase/auth";
 import { useState } from "react";
 import { StyleSheet, Text } from "react-native";
 import { AuthForm } from "@/components/AuthForm";
+import { GoogleButton } from "@/components/GoogleButton";
 import { Alert, Button, Field } from "@/components/ui";
 import { colors } from "@/constants/theme";
 import { useLocale } from "@/context/LocaleContext";
@@ -31,7 +32,7 @@ export default function LoginScreen() {
   return (
     <AuthForm title={t("login.title")} subtitle={t("login.subtitle")}>
       {error ? <Alert>{error}</Alert> : null}
-      <Alert tone="info">{t("auth.googleSoon")}</Alert>
+      <GoogleButton onError={setError} />
 
       <Field
         label={t("auth.email")}
