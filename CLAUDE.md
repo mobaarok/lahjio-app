@@ -36,8 +36,33 @@ Not done yet:
   needs an app restart; decide later).
 - No offline progress queue: content works offline after the first load, but
   answers made offline are only kept by Firestore's in-memory cache.
-- Play Store: needs the $25 Google Play developer account (owner), app signing
-  and a store listing.
+- Play Store (account ready 2026-11-14): the owner creates the upload key
+  (`keys/README.md`), then the app listing, data safety form, screenshots and
+  feature graphic. A personal developer account needs a closed test with 12+
+  testers for 14 days before production. Play also asks for a web link where
+  people can request deletion; the website's Account page has "Delete account".
+
+## Account deletion
+
+A **soft delete**, the same as the website (its commit 068e0a1, 2026-11-14). Account >
+"Delete account" (small red link under Log out) opens `src/app/delete-account.tsx`, a
+confirm step with "Yes, delete my account" and "Keep my account".
+`markAccountDeleted()` in `src/lib/account.ts` merges `is_deleted: true` and
+`deleted_at` into `users/{uid}`, then the app logs out. Nothing is removed: not the
+Firebase login, not progress or feedback. Never delete documents or the Auth user here.
+
+- `AuthProvider` checks `users/{uid}` (`isDeletedAccount()`) on every login and at
+  start-up, before setting the user, so no screen shows and nothing is written. A
+  deleted account is logged out again and `DeletedNotice` shows "This account was
+  deleted..." on welcome/login/signup. If the check fails (no internet), the learner
+  is let in, as on the website.
+- The rules let a learner set `is_deleted` but never undo it; only the owner can, in
+  the Firebase Console.
+- Message keys are the website's (`account.delete*`, `account.deletedNotice`).
+- Tested on the emulators with an email account on 2026-11-14.
+- **Google Play:** Play's account deletion policy asks that the data be deleted too
+  (some may be kept for a stated reason). A soft delete that keeps everything may not
+  be enough; the owner still has to decide how to erase data on request.
 
 ## Google login
 
@@ -71,6 +96,9 @@ Not done yet:
 - `npm run android:build`: builds and installs a native debug app on a plugged-in phone
   or emulator (needed later for Google login)
 - `npm run apk`: release APK for testers (see "Building an APK")
+- `npm run aab`: Play Store bundle signed with the upload key (see "Building for Google Play")
+- `npm run upload-key`: creates the upload key once (the owner runs it; keytool asks
+  for the password)
 - `npm run typecheck`, `npm run lint`, `npm run check:i18n`, `npm run doctor`.
   Run all four before saying work is done.
 - `npx expo export --platform android`: bundles the app without a phone (a quick
@@ -122,6 +150,20 @@ in Expo Go means the phone can't reach the server.
   so just run it again. Gradle installed the NDK 27.1 and SDK platform 37 it needed by itself.
 - Cloud option: `npx eas-cli build -p android --profile preview` (needs an Expo account
   and the `.env` values added as EAS environment variables; free tier has limits).
+
+### Building for Google Play
+
+`npm run aab` runs the same script with `--aab`: Gradle's `bundleRelease`, output
+`apk/lahjio-<version>-<versionCode>.aab`.
+
+- Signed with the upload key `keys/lahjio-upload.jks`; its password is in
+  `keys/upload-key.properties`. Both are git-ignored (only `keys/README.md` is in git)
+  and only the owner has them. Never create, replace or read out that key or password.
+- The script passes the key to Gradle as `ORG_GRADLE_PROJECT_android.injected.signing.*`
+  environment variables, so nothing in `android/` changes and the password stays out
+  of the log.
+- Raise `expo.android.versionCode` in `app.json` for every upload, then
+  `npx expo prebuild --clean` (and put back the `android` script in `package.json`).
 
 ### Testing logged-in screens safely
 

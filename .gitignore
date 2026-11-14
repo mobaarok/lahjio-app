@@ -1,5 +1,8 @@
 # Learn more https://docs.github.com/en/get-started/getting-started-with-git/ignoring-files
 
+#mine
+note/
+
 # dependencies
 node_modules/
 
@@ -47,3 +50,7 @@ yarn-error.*
 /apk
 *.apk
 android-build.log
+
+# Upload key for Google Play: never in git (see keys/README.md)
+keys/*
+!keys/README.md

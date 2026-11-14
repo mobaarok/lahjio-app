@@ -1,6 +1,7 @@
 // First screen for learners who are not logged in
 import { router } from "expo-router";
 import { Image, StyleSheet, Text, View } from "react-native";
+import { DeletedNotice } from "@/components/DeletedNotice";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { Screen } from "@/components/Screen";
 import { Button } from "@/components/ui";
@@ -25,6 +26,7 @@ export default function WelcomeScreen() {
       </View>
 
       <View style={styles.actions}>
+        <DeletedNotice />
         <Button title={t("landing.ctaStart")} size="lg" onPress={() => router.push("/signup")} />
         <Button title={t("nav.login")} size="lg" variant="secondary" onPress={() => router.push("/login")} />
         <Button title={t("welcome.guest")} variant="ghost" onPress={() => router.push("/quiz")} />

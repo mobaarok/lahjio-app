@@ -28,28 +28,36 @@ function fail(code: string): never {
   throw Object.assign(new Error(code), { code });
 }
 
-// Returns false if the learner closed the account picker
-export async function signInWithGoogle(): Promise<boolean> {
+// Opens Google's account picker and turns the answer into a Firebase
+// credential. Returns null if the learner closed the picker.
+async function pickGoogleAccount() {
   const { GoogleSignin, isErrorWithCode, isSuccessResponse, statusCodes } = await loadGoogleSignIn();
 
   try {
     await GoogleSignin.hasPlayServices({ showPlayServicesUpdateDialog: true });
     const response = await GoogleSignin.signIn();
-    if (!isSuccessResponse(response)) return false;
+    if (!isSuccessResponse(response)) return null;
 
     const { idToken } = response.data;
     if (!idToken) fail("auth/google-no-token");
-    await signInWithCredential(auth, GoogleAuthProvider.credential(idToken));
-    return true;
+    return GoogleAuthProvider.credential(idToken);
   } catch (error) {
-    if (!isErrorWithCode(error)) throw error; // a Firebase error: keep its code
-    if (error.code === statusCodes.SIGN_IN_CANCELLED) return false;
+    if (!isErrorWithCode(error)) throw error;
+    if (error.code === statusCodes.SIGN_IN_CANCELLED) return null;
     if (error.code === statusCodes.PLAY_SERVICES_NOT_AVAILABLE) fail("auth/google-play-services");
     // Code "10" (DEVELOPER_ERROR) means Firebase doesn't know this app's
     // SHA-1 fingerprint, or the package name doesn't match
     console.warn("Google sign-in failed:", error.code, error.message);
     throw error;
   }
+}
+
+// Returns false if the learner closed the account picker
+export async function signInWithGoogle(): Promise<boolean> {
+  const credential = await pickGoogleAccount();
+  if (!credential) return false;
+  await signInWithCredential(auth, credential);
+  return true;
 }
 
 // Called on logout, so the next login shows the account picker again

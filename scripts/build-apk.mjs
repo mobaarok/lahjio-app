@@ -1,14 +1,17 @@
-// Builds a release APK on this computer for testers: npm run apk
+// Builds the Android app on this computer.
+//   npm run apk -> apk/lahjio-<version>.apk for testers, signed with the debug key
+//   npm run aab -> apk/lahjio-<version>-<versionCode>.aab for Google Play,
+//                  signed with your upload key (see keys/README.md)
 // 1. Uses Android Studio's Java and the Android SDK (no environment variables needed)
 // 2. Creates the android/ folder with `expo prebuild` if it is missing
-// 3. Runs Gradle, then copies the APK to apk/lahjio-<version>.apk
-// The APK is signed with the debug key: fine for testers, not for the Play Store.
+// 3. Runs Gradle, then copies the result to apk/
 import { spawnSync } from "node:child_process";
 import { copyFileSync, existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
 import { homedir } from "node:os";
 import { join } from "node:path";
 
 const root = process.cwd();
+const forPlayStore = process.argv.includes("--aab");
 const androidDir = join(root, "android");
 const localAppData = process.env.LOCALAPPDATA ?? join(homedir(), "AppData", "Local");
 
@@ -24,6 +27,38 @@ for (const [name, path] of [["Java (Android Studio jbr)", join(javaHome, "bin", 
 }
 
 const env = { ...process.env, JAVA_HOME: javaHome, ANDROID_HOME: sdkDir, NODE_ENV: "production" };
+
+// The Play Store build is signed with the upload key. Its password is read from
+// keys/upload-key.properties (never in git) and handed to Gradle through
+// environment variables, so it doesn't show up in the build log.
+if (forPlayStore) {
+  const keysDir = join(root, "keys");
+  const propsFile = join(keysDir, "upload-key.properties");
+  if (!existsSync(propsFile)) {
+    console.error(`Missing ${propsFile}. Create the upload key first: see keys/README.md`);
+    process.exit(1);
+  }
+  const props = {};
+  for (const line of readFileSync(propsFile, "utf8").split(/\r?\n/)) {
+    const at = line.indexOf("=");
+    if (at > 0 && !line.trim().startsWith("#")) props[line.slice(0, at).trim()] = line.slice(at + 1).trim();
+  }
+  const storeFile = join(keysDir, props.storeFile ?? "lahjio-upload.jks");
+  if (!existsSync(storeFile) || !props.storePassword) {
+    console.error(`The upload key or its password is missing (${storeFile}). See keys/README.md`);
+    process.exit(1);
+  }
+  const signing = {
+    "store.file": storeFile.replace(/\\/g, "/"),
+    "store.password": props.storePassword,
+    "key.alias": props.keyAlias ?? "upload",
+    // A PKCS12 key store (keytool's default) uses one password for both
+    "key.password": props.keyPassword ?? props.storePassword,
+  };
+  for (const [name, value] of Object.entries(signing)) {
+    env[`ORG_GRADLE_PROJECT_android.injected.signing.${name}`] = value;
+  }
+}
 
 function run(command, args, cwd) {
   console.log(`\n> ${command} ${args.join(" ")}`);
@@ -61,11 +96,19 @@ console.log(`Using CMake: ${cmakeDir ?? "Gradle's default"}`);
 // Most phones are arm64; older cheap phones are armeabi-v7a. Skipping the
 // emulator-only x86 builds makes the APK smaller and the build faster.
 // Full path: some shells don't look in the current folder for programs
-run(`"${join(androidDir, "gradlew.bat")}"`, ["assembleRelease", '"-PreactNativeArchitectures=arm64-v8a,armeabi-v7a"'], androidDir);
+const task = forPlayStore ? "bundleRelease" : "assembleRelease";
+run(`"${join(androidDir, "gradlew.bat")}"`, [task, '"-PreactNativeArchitectures=arm64-v8a,armeabi-v7a"'], androidDir);
 
-const { version } = JSON.parse(readFileSync(join(root, "app.json"), "utf8")).expo;
-const built = join(androidDir, "app", "build", "outputs", "apk", "release", "app-release.apk");
+const { version, android } = JSON.parse(readFileSync(join(root, "app.json"), "utf8")).expo;
+const outputs = join(androidDir, "app", "build", "outputs");
 mkdirSync(join(root, "apk"), { recursive: true });
-const target = join(root, "apk", `lahjio-${version}.apk`);
-copyFileSync(built, target);
-console.log(`\nAPK ready: ${target}`);
+if (forPlayStore) {
+  // Google Play needs a higher versionCode (app.json) for every upload
+  const target = join(root, "apk", `lahjio-${version}-${android.versionCode}.aab`);
+  copyFileSync(join(outputs, "bundle", "release", "app-release.aab"), target);
+  console.log(`\nAAB ready for Google Play: ${target}`);
+} else {
+  const target = join(root, "apk", `lahjio-${version}.apk`);
+  copyFileSync(join(outputs, "apk", "release", "app-release.apk"), target);
+  console.log(`\nAPK ready: ${target}`);
+}

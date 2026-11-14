@@ -34,7 +34,9 @@
     "typecheck": "tsc --noEmit",
     "check:i18n": "node scripts/check-i18n.mjs",
     "doctor": "npx expo-doctor",
-    "apk": "node scripts/build-apk.mjs"
+    "apk": "node scripts/build-apk.mjs",
+    "aab": "node scripts/build-apk.mjs --aab",
+    "upload-key": "node scripts/create-upload-key.mjs"
   },
   "private": true,
   "devDependencies": {

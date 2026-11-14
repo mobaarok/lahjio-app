@@ -153,6 +153,15 @@ export default function AccountScreen() {
         icon={<Ionicons name="log-out-outline" size={20} color={colors.text} />}
         onPress={logout}
       />
+      {/* Small on purpose: Google Play requires it, but nobody should tap it by accident */}
+      <Pressable
+        accessibilityRole="button"
+        onPress={() => router.push("/delete-account")}
+        style={({ pressed }) => [styles.deleteLink, pressed && styles.linkPressed]}
+      >
+        <Ionicons name="trash-outline" size={16} color={colors.red} />
+        <Text style={styles.deleteText}>{t("account.delete")}</Text>
+      </Pressable>
 
       <View>
         <Text style={styles.version}>{t("account.version", { version: num(version) })}</Text>
@@ -170,4 +179,6 @@ const styles = StyleSheet.create({
   section: { padding: spacing.xl, gap: spacing.md },
   label: { fontSize: 14, fontWeight: "500", color: colors.textBody },
   version: { textAlign: "center", fontSize: 12, color: colors.textFaint },
+  deleteLink: { flexDirection: "row", alignItems: "center", justifyContent: "center", gap: spacing.xs, padding: spacing.sm },
+  deleteText: { fontSize: 14, fontWeight: "500", color: colors.red },
 });

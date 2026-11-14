@@ -59,6 +59,7 @@ function RootStack() {
         <Stack.Screen name="course/[courseId]" options={{ headerShown: true, title: "" }} />
         <Stack.Screen name="lesson/[courseId]/[lessonId]" options={{ gestureEnabled: false }} />
         <Stack.Screen name="progress" options={{ headerShown: true, title: t("nav.progress") }} />
+        <Stack.Screen name="delete-account" options={{ headerShown: true, title: t("account.delete") }} />
       </Stack.Protected>
 
       <Stack.Protected guard={!loggedIn} redirectTo="/">

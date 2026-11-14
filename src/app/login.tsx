@@ -17,7 +17,9 @@ export default function LoginScreen() {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
-  // After login, the root layout shows the home screen by itself
+  // After login, the root layout shows the home screen by itself. If the
+  // account was deleted, AuthProvider logs it out again and this screen stays,
+  // so the button must stop spinning either way.
   async function handleSubmit() {
     setError("");
     try {
@@ -25,6 +27,7 @@ export default function LoginScreen() {
       await signInWithEmailAndPassword(auth, email.trim(), password);
     } catch (err) {
       setError(t(authErrorKey(err)));
+    } finally {
       setLoading(false);
     }
   }

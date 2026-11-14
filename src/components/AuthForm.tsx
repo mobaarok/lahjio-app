@@ -2,6 +2,7 @@
 import type { ReactNode } from "react";
 import { KeyboardAvoidingView, Platform, StyleSheet, Text, View } from "react-native";
 import { colors, spacing } from "@/constants/theme";
+import { DeletedNotice } from "./DeletedNotice";
 import { Screen } from "./Screen";
 import { Card } from "./ui";
 
@@ -13,7 +14,10 @@ export function AuthForm({ title, subtitle, children }: { title: string; subtitl
           <Text style={styles.title}>{title}</Text>
           <Text style={styles.subtitle}>{subtitle}</Text>
         </View>
-        <Card style={styles.card}>{children}</Card>
+        <Card style={styles.card}>
+          <DeletedNotice />
+          {children}
+        </Card>
       </Screen>
     </KeyboardAvoidingView>
   );
