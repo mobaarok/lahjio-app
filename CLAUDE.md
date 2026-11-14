@@ -1,7 +1,7 @@
 # Lahjio Android app
 
 The Android app of Lahjio, which teaches Saudi Arabic to Bangla-speaking expats in
-Saudi Arabia. It's the phone version of the website https://lahjio.app and uses the
+Saudi Arabia. It's the phone version of the website https://lahjio.com and uses the
 **same Firebase project (`lahjio`)**, so a learner's account, XP, streak and progress
 are the same in the app and on the website.
 

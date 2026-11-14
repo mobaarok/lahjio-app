@@ -1,6 +1,6 @@
 # Lahjio for Android
 
-Learn Saudi Arabic in your own language: the Android app of [lahjio.app](https://lahjio.app),
+Learn Saudi Arabic in your own language: the Android app of [lahjio.com](https://lahjio.com),
 built with Expo (React Native) and TypeScript. It shares the website's Firebase project,
 so progress is the same on both.
 

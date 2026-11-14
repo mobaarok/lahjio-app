@@ -97,7 +97,7 @@ export default function AccountScreen() {
         ))}
         <Pressable
           accessibilityRole="link"
-          onPress={() => Linking.openURL("https://lahjio.app")}
+          onPress={() => Linking.openURL("https://lahjio.com")}
           style={({ pressed }) => [styles.link, styles.linkBorder, pressed && styles.linkPressed]}
         >
           <Ionicons name="globe-outline" size={20} color={colors.primaryDark} />

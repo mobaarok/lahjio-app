@@ -2,13 +2,13 @@
 // text-to-speech voice (Arabic, Saudi if the phone has it).
 //
 // Items store the recording in Firestore's "audio" field, usually as a path on
-// the website, e.g. "audio/s7-d1-01.mp3" -> https://lahjio.app/audio/s7-d1-01.mp3.
+// the website, e.g. "audio/s7-d1-01.mp3" -> https://lahjio.com/audio/s7-d1-01.mp3.
 // A full link ("https://...") is used as it is.
 import { createAudioPlayer, setAudioModeAsync, type AudioPlayer } from "expo-audio";
 import * as Speech from "expo-speech";
 import type { Item } from "./types";
 
-const SITE_URL = "https://lahjio.app";
+const SITE_URL = "https://lahjio.com";
 
 // If a recording hasn't started within this time (bad link, slow or no
 // internet), the phone's voice reads the word instead
